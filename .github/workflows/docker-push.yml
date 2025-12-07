@@ -3,27 +3,35 @@ name: Push to Docker Hub
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Allows manual run
+  workflow_dispatch:
 
 jobs:
-  push-to-dockerhub:
+  push:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
+      - name: List files for debugging
+        run: ls -la
+      
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "mreyes2025" --password-stdin
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "mreyes2025" --password-stdin
       
       - name: Build Docker image
-        run: docker build -t mreyes2025/sentiment-api:latest .
+        run: |
+          docker build -t mreyes2025/sentiment-api:latest .
+          echo "✅ Docker build completed"
       
       - name: Push to Docker Hub
-        run: docker push mreyes2025/sentiment-api:latest
-      
-      - name: Verify success
         run: |
-          echo "✅ Docker image pushed successfully!"
-          echo "📦 Repository: mreyes2025/sentiment-api"
-          echo "🔗 View at: https://hub.docker.com/r/mreyes2025/sentiment-api"
+          docker push mreyes2025/sentiment-api:latest
+          echo "✅ Docker push completed"
+      
+      - name: Success message
+        run: |
+          echo "🎉 Docker image pushed successfully!"
+          echo "📦 Image: mreyes2025/sentiment-api:latest"
+          echo "🔗 View: https://hub.docker.com/r/mreyes2025/sentiment-api"
